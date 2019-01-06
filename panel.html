@@ -5,14 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Case Manager</title>
     <link rel="stylesheet" href="js/jquery-ui.css">
+    <link type="text/css" rel="stylesheet" href="js/jquery.dropdown.min.css" />
     <script src="js/jquery-3.3.1.js"></script>
     <script src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/jquery.dropdown.min.js"></script>
     <script src="panel.js"></script>
     <style>
       .banner {
         background-color: #f47511;
         padding: 4px;
         color: white;
+      }
+      
+      table
+      {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
       }
     </style>
   </head>
@@ -32,6 +41,16 @@
 
     <script src="js/panel-ui.js"></script>
 
-    
+    <div id="items">
+        <table>
+          <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="jq-dropdown-1" class="jq-dropdown jq-dropdown-anchor-right">
+        <ul class="jq-dropdown-menu">
+            <li id="first-item"><a href="#1">Inspect</a></li>
+        </ul>
+    </div>
   </body>
 </html>
