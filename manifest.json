@@ -1,7 +1,7 @@
 {
-    "name": "Getting Started Example",
+    "name": "IBM Case Manager Extension",
     "version": "1.0",
-    "description": "Build an Extension!",
+    "description": "Developer Extension for IBM Case Manager",
     "permissions": ["activeTab","declarativeContent","storage"],
     "manifest_version": 2,
     "web_accessible_resources": [

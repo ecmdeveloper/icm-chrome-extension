@@ -8,16 +8,17 @@ chrome.devtools.panels.create('Case Manager', 'images/get_started32.png', 'panel
     // });
 });
 
-chrome.devtools.panels.elements.createSidebarPane("My Sidebar",
-    function(sidebar) {
-        // sidebar initialization code here
+chrome.devtools.panels.elements.createSidebarPane("Widget Properties",
+     function(sidebar) {
 
-        chrome.devtools.inspectedWindow.eval(
-//            "$$('.icmPage')",
-//             "$$('.icmPageWidget').map( page => page.id)",
-//             "$$('.icmPage').map( page => dijit.byId(page.id) )",
-             function(icmPages, isException) {
-                sidebar.setObject(icmPages);
+        chrome.devtools.panels.elements.onSelectionChanged.addListener(function() {
+
+            chrome.devtools.inspectedWindow.eval( "if ($0.id && dijit.byId($0.id)) dijit.byId($0.id).widgetProperties", function(widgetProperties, isException) {
+                if ( isException ) {
+                    sidebar.setObject(isException);
+                } else {
+                    sidebar.setObject(widgetProperties);
                 }
-        );        
+            });
+      });
 });
