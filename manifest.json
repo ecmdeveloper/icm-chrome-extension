@@ -1,7 +1,7 @@
 {
     "name": "IBM Case Manager Extension",
     "version": "1.0",
-    "description": "Developer Extension for IBM Case Manager",
+    "description": "Developer Extension for IBM Case Manager. Does runtime inspection of pages and widgets in your solution.",
     "permissions": ["activeTab","declarativeContent","storage"],
     "manifest_version": 2,
     "web_accessible_resources": [
