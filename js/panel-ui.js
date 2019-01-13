@@ -20,7 +20,7 @@ function getPages() {
 
                     var row = `<tr id="row_${icmPages[each].id}">
                                 <td width="90%" class="ui-button" style="text-align: left" data-jq-dropdown="#jq-dropdown-1" id="${icmPages[each].id}">
-                                    <span class="ui-icon ui-icon-document"/>
+                                    <i class="fa fa-cubes"></i>
                                     <strong>${icmPages[each].title} (${icmPages[each].module}<strong>
                                     <span style="float:right" class="ui-icon  ui-icon-triangle-1-s"></span>
                                 </td>
@@ -40,9 +40,22 @@ function refreshPageWidgets(event) {
     getPageWidgets(event.data.param1);
 }
 
+// INJECTED CODE, NOT EXECUTED IN THIS CONTEXT
+
+var mapPageWidgets = widget => { 
+    var properties = dijit.byId(widget.id).widgetProperties;
+    return {
+        id: widget.id,
+        isScriptAdapter: typeof properties.payload != 'undefined' && typeof properties.showScriptText !== 'undefined'
+    } 
+};
+
 function getPageWidgets(pageId) {
+
+    console.log( mapPageWidgets.toString() );
+
     chrome.devtools.inspectedWindow.eval(
-        `$$('.icmPageWidget', document.getElementById('${pageId}')).map( widget => widget.id )`,
+        `$$('.icmPageWidget', document.getElementById('${pageId}')).map( ${mapPageWidgets.toString()} )`,
         function(pageWidgets, isException) {
         if (isException) 
             console.log(isException);
@@ -56,9 +69,10 @@ function getPageWidgets(pageId) {
                 // info = $(document.createElement('p'));
                 // info.html(pageWidgets[each]);
                 //$(`#info_${pageId}`).append(pageWidgets[each] + "<br>");
+            var icon = pageWidgets[each].isScriptAdapter ? 'gears': 'cube';
             var row = `<tr>
-                        <td width="90%" class="ui-button" style="text-align: left" data-jq-dropdown="#jq-dropdown-1" id="${pageWidgets[each]}">
-                            <span class="ui-icon ui-icon-blank"></span>${pageWidgets[each]}
+                        <td width="90%" class="ui-button" style="text-align: left" data-jq-dropdown="#jq-dropdown-1" id="${pageWidgets[each].id}">
+                            <span class="ui-icon ui-icon-blank"/><i class="fa fa-${icon}"></i>&nbsp;${pageWidgets[each].id}
                             <span style="float:right" class="ui-icon  ui-icon-triangle-1-s"></span>
                         </td>
                     </tr>`;
