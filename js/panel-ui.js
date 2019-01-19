@@ -2,6 +2,15 @@ let page = document.getElementById('buttonDiv');
 
 // INJECTED CODE, NOT EXECUTED IN THIS CONTEXT
 
+var mapPages = page => { 
+    let dijitPage = dijit.byId(page.id); 
+    return { 
+        title: dijitPage.title, 
+        module: dijitPage.moduleName, 
+        id: page.id 
+    }; 
+};
+
 var mapPageWidgets = widget => { 
     var properties = dijit.byId(widget.id).widgetProperties;
     return {
@@ -19,15 +28,15 @@ var startDebugging = widget => {
 
 // END OF INJECTED CODE
 
-let fetchCaseManagerPages = () => {return new Promise( (resolve, reject) => {
+let fetchCaseManagerPages = () => new Promise( (resolve, reject) => {
 
     chrome.devtools.inspectedWindow.eval(
-        "$$('.icmPage').map( page => { let dijitPage = dijit.byId(page.id); console.dir(dijitPage); return { title: dijitPage.title, module: dijitPage.moduleName, id: page.id }; } );",
+        `$$('.icmPage').map( ${mapPages.toString()} );`,
         function(icmPages, isException) {
             if ( isException) reject(isException)
             else resolve(icmPages);
         });    
-})};
+});
 
 const fetchPageWidgets = pageId => new Promise( (resolve, reject) => {
 
