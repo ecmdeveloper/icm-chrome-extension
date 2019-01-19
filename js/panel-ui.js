@@ -55,9 +55,9 @@ function showPages(icmPages ) {
 
         table.append(row);
 
-        fetchPageWidgets(icmPages[each].id).then(
-            pageWidgets => showWidgets(pageWidgets, icmPages[each].id)
-        ).catch( error => console.log(error) );
+        fetchPageWidgets(icmPages[each].id)
+            .then(showWidgets)
+            .catch( error => console.log(error) );
     }
 }
 
@@ -86,14 +86,13 @@ function showWidget(pageWidget, pageId ) {
 }
 
 function refreshPageWidgets(event) {
-    console.log(event.data.param1);
     getPageWidgets(event.data.param1);
 }
 
 function loadPages() {
-    fetchCaseManagerPages().then( showPages ).catch(
-        error => console.log(error)
-    );
+    fetchCaseManagerPages()
+        .then( showPages )
+        .catch(error => console.log(error));
 }
 
 $(document).ready(function() {
