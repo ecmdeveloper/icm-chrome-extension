@@ -8,9 +8,13 @@
     <link rel="stylesheet" href="js/jquery-ui.css">
     <link type="text/css" rel="stylesheet" href="js/jquery.dropdown.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="codemirror/codemirror.css">
 
     <script src="js/jquery-3.3.1.js"></script>
     <script src="js/jquery-ui.js"></script>
+
+    <script src="codemirror/codemirror.js"></script>
+    <script src="codemirror/javascript/javascript.js"></script>
     <script type="text/javascript" src="js/jquery.dropdown.min.js"></script>
     <script src="panel.js"></script>
     <style>
@@ -26,6 +30,15 @@
         width: 100%;
         border-collapse: collapse;
       }
+
+      .CodeMirror {
+        font-size: 12px;
+      }
+
+      .no-close .ui-dialog-titlebar-close {
+        display: none;
+      }
+
     </style>
   </head>
   <body>
@@ -49,6 +62,10 @@
           <tbody></tbody>
         </table>
     </div>
+
+    <div id="dialog">
+      <textarea class='script-adapter-editor'></textarea>
+    </div>  
 
     <div id="jq-dropdown-1" class="jq-dropdown jq-dropdown-anchor-right">
         <ul class="jq-dropdown-menu">

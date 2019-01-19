@@ -110,10 +110,9 @@ $(document).ready(function() {
 
     $('#loadPages').click(loadPages);
 
-    $("#accordion").accordion();
-    $( "#menu1" ).menu();
-    $( "#menu2" ).menu();
-
+    var scriptAdapterArea = $('.script-adapter-editor')[0];
+    var scriptAdapterEditor;
+   
     $("#first-item").on("click", () =>
         chrome.devtools.inspectedWindow.eval(`inspect(document.getElementById("${menuContext}"));`)
     );
@@ -122,8 +121,40 @@ $(document).ready(function() {
         chrome.devtools.inspectedWindow.eval(`inspect(document.getElementById("${menuContext}"));`)
     );
 
-    $('#start-debug').on("click", () => 
-        chrome.devtools.inspectedWindow.eval(`[document.getElementById('${menuContext}')].map( ${startDebugging.toString()})`)
+    $('#start-debug').on("click", () => {
+        
+        $( "#dialog" ).dialog({
+            dialogClass: "no-close",
+            title: "Script Adapter Editor",
+            buttons: [
+              {
+                text: "OK",
+                click: function() {
+                  $( this ).dialog( "close" );
+                }
+              }
+            ]
+          });
+
+          if ( !scriptAdapterEditor) {
+            scriptAdapterEditor = CodeMirror.fromTextArea(scriptAdapterArea, {
+                lineNumbers: false,
+                mode:  "javascript",
+                value: "function myScript(){return 100;}\n",
+            })
+
+            scriptAdapterEditor.setValue(mapPageWidgets.toString() );
+
+            scriptAdapterEditor.on("change", function() {
+                if ( $('#dialog').dialog("isOpen") ) {
+                    $( "#dialog" ).dialog('option', 'title', "Script Adapter Editor - changed");
+                    console.log("Changed!");
+                }
+            });
+        }
+   
+        }
+        //chrome.devtools.inspectedWindow.eval(`[document.getElementById('${menuContext}')].map( ${startDebugging.toString()})`)
         //, 
         // (r,e) => {
         //     debugger;
@@ -142,4 +173,5 @@ $(document).ready(function() {
         menuContext = dropdownData.trigger[0].id;
     });
 
+    
 });
