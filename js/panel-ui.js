@@ -3,7 +3,7 @@ let page = document.getElementById('buttonDiv');
 // INJECTED CODE, NOT EXECUTED IN THIS CONTEXT
 
 var mapPages = page => { 
-    let dijitPage = dijit.byId(page.id); 
+    const dijitPage = dijit.byId(page.id); 
     return { 
         title: dijitPage.title, 
         module: dijitPage.moduleName, 
@@ -26,6 +26,11 @@ var startDebugging = widget => {
     }
 };
 
+var getScriptAdapterCode = widget => {
+    const properties = dijit.byId(widget.id).widgetProperties;
+    if (properties ) return properties.payload;
+};
+
 // END OF INJECTED CODE
 
 let fetchCaseManagerPages = () => new Promise( (resolve, reject) => {
@@ -45,6 +50,16 @@ const fetchPageWidgets = pageId => new Promise( (resolve, reject) => {
         function(pageWidgets, isException) {
             if (isException) reject(isException);
             else resolve({pageWidgets, pageId} )
+        });
+});
+
+const fetchScriptAdapterCode = widgetId => new Promise( (resolve, reject) => {
+
+    chrome.devtools.inspectedWindow.eval(
+        `[document.getElementById('${widgetId}')].map( ${getScriptAdapterCode.toString()} )`,
+        function(scriptAdapterCode, isException) {
+            if (isException) reject(isException);
+            else resolve(scriptAdapterCode[0] )
         });
 });
 
@@ -109,9 +124,6 @@ $(document).ready(function() {
     loadPages();
 
     $('#loadPages').click(loadPages);
-
-    var scriptAdapterArea = $('.script-adapter-editor')[0];
-    var scriptAdapterEditor;
    
     $("#first-item").on("click", () =>
         chrome.devtools.inspectedWindow.eval(`inspect(document.getElementById("${menuContext}"));`)
@@ -123,36 +135,13 @@ $(document).ready(function() {
 
     $('#start-debug').on("click", () => {
         
-        $( "#dialog" ).dialog({
-            dialogClass: "no-close",
-            title: "Script Adapter Editor",
-            buttons: [
-              {
-                text: "OK",
-                click: function() {
-                  $( this ).dialog( "close" );
-                }
-              }
-            ]
-          });
-
-          if ( !scriptAdapterEditor) {
-            scriptAdapterEditor = CodeMirror.fromTextArea(scriptAdapterArea, {
-                lineNumbers: false,
-                mode:  "javascript",
-                value: "function myScript(){return 100;}\n",
+        fetchScriptAdapterCode(menuContext)
+            .then( scriptAdapterCode => {
+                $( "#dialog" ).dialog( "open" );
+                scriptAdapterEditor.setValue(scriptAdapterCode);
+                $( "#dialog" ).dialog( "option", "title", "Script Adapter Editor");
             })
-
-            scriptAdapterEditor.setValue(mapPageWidgets.toString() );
-
-            scriptAdapterEditor.on("change", function() {
-                if ( $('#dialog').dialog("isOpen") ) {
-                    $( "#dialog" ).dialog('option', 'title', "Script Adapter Editor - changed");
-                    console.log("Changed!");
-                }
-            });
-        }
-   
+            .catch(error => console.log(error));
         }
         //chrome.devtools.inspectedWindow.eval(`[document.getElementById('${menuContext}')].map( ${startDebugging.toString()})`)
         //, 
@@ -173,5 +162,34 @@ $(document).ready(function() {
         menuContext = dropdownData.trigger[0].id;
     });
 
-    
+    var scriptAdapterArea = $('.script-adapter-editor')[0];
+    var scriptAdapterEditor;
+   
+    $( "#dialog" ).dialog({
+        autoOpen: false,
+        dialogClass: "no-close",
+        title: "Script Adapter Editor",
+        modal: true,
+        buttons: [
+          {
+            text: "OK",
+            click: function() {
+              $( this ).dialog( "close" );
+            }
+          }
+        ]
+    });
+
+    scriptAdapterEditor = CodeMirror.fromTextArea(scriptAdapterArea, {
+        lineNumbers: false,
+        mode:  "javascript",
+    })
+
+    scriptAdapterEditor.on("change", function() {
+        if ( $('#dialog').dialog("isOpen") ) {
+            $( "#dialog" ).dialog('option', 'title', "Script Adapter Editor - changed");
+            console.log("Changed!");
+        }
+    });
+
 });
