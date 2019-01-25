@@ -19,6 +19,18 @@
     <script type="text/javascript" src="js/jquery.dropdown.min.js"></script>
     <script src="panel.js"></script>
     <style>
+      body {
+        margin: 0px;
+      }
+
+      a {
+        color: #454545;
+      }
+
+      td {
+        padding: .4em 1em;
+      }
+
       .banner {
         background-color: #f47511;
         padding: 4px;
@@ -30,6 +42,7 @@
         table-layout: fixed;
         width: 100%;
         border-collapse: collapse;
+        border-spacing: 0px;
       }
 
       .CodeMirror {
@@ -77,6 +90,7 @@
     <div id="script-adapter-dropdown" class="jq-dropdown jq-dropdown-anchor-right">
       <ul class="jq-dropdown-menu">
           <li id="script-adapter-inspect"><a href="#1">Inspect</a></li>
+          <li id="script-adapter-edit"><a href="#1">Edit Code</a></li>
           <li id="start-debug"><a href="#2">Start debugging</a></li>
           <li id="stop-debug"><a href="#3">Stop debugging</a></li>
       </ul>

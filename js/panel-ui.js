@@ -26,6 +26,13 @@ var startDebugging = widget => {
     }
 };
 
+var stopDebugging = widget => {
+    var properties = dijit.byId(widget.id).widgetProperties;
+    if ( properties.payload.startsWith("debugger;")) {
+        properties.payload = properties.payload.replace('debugger;','');
+    }
+};
+
 var getScriptAdapterCode = widget => {
     const properties = dijit.byId(widget.id).widgetProperties;
     if (properties ) return properties.payload;
@@ -70,12 +77,11 @@ function showPages(icmPages ) {
     for (each in icmPages) {
 
         var row = `<tr id="row_${icmPages[each].id}">
-                    <td width="90%" class="ui-button" style="text-align: left" data-jq-dropdown="#jq-dropdown-1" id="${icmPages[each].id}">
+                    <th width="100%" class="ui-button" style="text-align: left">
                         <i class="fa fa-cubes"></i>
-                        <strong>${icmPages[each].title} (${icmPages[each].module}<strong>
-                        <span style="float:right" class="ui-icon  ui-icon-triangle-1-s"></span>
-                    </td>
-                </tr>`;
+                        <a data-jq-dropdown="#jq-dropdown-1" href="#" id="${icmPages[each].id}">
+                            <strong>${icmPages[each].title} (${icmPages[each].module}<strong></a>
+                    </th></tr>`;
 
         table.append(row);
 
@@ -100,9 +106,11 @@ function showWidget(pageWidget, pageId ) {
     var menu = pageWidget.isScriptAdapter ? 'script-adapter-dropdown' : 'jq-dropdown-1';
 
     var row = `<tr>
-                <td width="90%" class="ui-button" style="text-align: left" data-jq-dropdown="#${menu}" id="${pageWidget.id}">
-                    <span class="ui-icon ui-icon-blank"/><i class="fa fa-${icon}"></i>&nbsp;${pageWidget.id}
-                    <span style="float:right" class="ui-icon  ui-icon-triangle-1-s"></span>
+                <td width="100%" style="text-align: left" >
+                    <span class="ui-icon ui-icon-blank"/><i class="fa fa-${icon}"></i>&nbsp;
+                    <a data-jq-dropdown="#${menu}" id="${pageWidget.id}" href="#">
+                    ${pageWidget.id}
+                    </a>
                 </td>
             </tr>`;
 
@@ -133,24 +141,26 @@ $(document).ready(function() {
         chrome.devtools.inspectedWindow.eval(`inspect(document.getElementById("${menuContext}"));`)
     );
 
-    $('#start-debug').on("click", () => {
-        
+    $('#script-adapter-edit').on("click", () => {
         fetchScriptAdapterCode(menuContext)
-            .then( scriptAdapterCode => {
-                $( "#dialog" ).dialog( "open" );
-                scriptAdapterEditor.setValue(scriptAdapterCode);
-                $( "#dialog" ).dialog( "option", "title", "Script Adapter Editor");
-            })
-            .catch(error => console.log(error));
-        }
-        //chrome.devtools.inspectedWindow.eval(`[document.getElementById('${menuContext}')].map( ${startDebugging.toString()})`)
-        //, 
-        // (r,e) => {
-        //     debugger;
-        //     console.log(e);
-        // }
-    );
+        .then( scriptAdapterCode => {
+            $( "#dialog" ).dialog( "open" );
+            scriptAdapterEditor.setValue(scriptAdapterCode);
+            $( "#dialog" ).dialog( "option", "title", "Script Adapter Editor");
+        })
+        .catch(error => console.log(error));
+    });
+    
+    $('#start-debug').on("click", () => {
+        chrome.devtools.inspectedWindow.eval(`[document.getElementById('${menuContext}')].map( ${startDebugging.toString()})`), 
+        (r,e) => {console.log(e);}
+    });
 
+    $('#stop-debug').on("click", () => {
+        chrome.devtools.inspectedWindow.eval(`[document.getElementById('${menuContext}')].map( ${stopDebugging.toString()})`), 
+        (r,e) => {console.log(e);}
+    });
+   
     var menuContext;
 
     $('#jq-dropdown-1').on('show', function(event, dropdownData) {
